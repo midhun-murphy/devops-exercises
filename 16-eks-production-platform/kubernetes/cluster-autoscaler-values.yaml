@@ -1,0 +1,9 @@
+autoDiscovery:
+  clusterName: production-eks
+
+awsRegion: ap-south-1
+
+rbac:
+  serviceAccount:
+    create: true
+    name: cluster-autoscaler
