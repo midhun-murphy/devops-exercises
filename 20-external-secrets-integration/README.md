@@ -1,34 +1,48 @@
-External Secrets Integration with Amazon EKS
-Project Overview
+# 20 - External Secrets Integration with Amazon EKS
+
+## Project Overview
 
 This project demonstrates how to securely manage application secrets in Kubernetes using External Secrets Operator (ESO) and AWS Secrets Manager on an Amazon EKS cluster.
 
 Instead of storing sensitive information directly inside Kubernetes manifests, secrets are stored in AWS Secrets Manager and automatically synchronized into Kubernetes Secrets using External Secrets Operator.
 
-Architecture
+---
+
+## Architecture
+
+```text
 AWS Secrets Manager
         │
         ▼
 SecretStore
         │
         ▼
-External Secret Operator
+External Secrets Operator
         │
         ▼
 Kubernetes Secret
         │
         ▼
-Applications / Pods
-Technologies Used
-Amazon EKS
-Terraform
-AWS Secrets Manager
-External Secrets Operator
-Kubernetes
-Helm
-AWS CLI
-kubectl
-Project Structure
+Application
+```
+
+---
+
+## Technologies Used
+
+- Amazon EKS
+- Terraform
+- AWS Secrets Manager
+- External Secrets Operator
+- Kubernetes
+- Helm
+- AWS CLI
+
+---
+
+## Project Structure
+
+```text
 20-external-secrets-integration/
 │
 ├── kubernetes/
@@ -51,180 +65,217 @@ Project Structure
 │
 ├── .gitignore
 └── README.md
-Infrastructure Provisioning
-Deploy EKS Cluster
+```
 
-Initialize Terraform:
+---
 
+## Prerequisites
+
+- AWS Account
+- Terraform
+- kubectl
+- Helm
+- AWS CLI
+
+---
+
+## Step 1: Deploy EKS Cluster
+
+```bash
 terraform init
-
-Validate configuration:
-
 terraform validate
-
-Create infrastructure:
-
 terraform apply -auto-approve
-Configure kubectl
+```
 
-Update kubeconfig:
+---
 
+## Step 2: Configure kubectl
+
+```bash
 aws eks update-kubeconfig \
 --region ap-south-1 \
 --name exercise20-eks
 
-Verify cluster access:
-
 kubectl get nodes
+```
 
-Expected Output:
+---
 
-NAME                                        STATUS   ROLES    AGE
-ip-10-0-1-123.ap-south-1.compute.internal   Ready    <none>
-Install External Secrets Operator
+## Step 3: Install External Secrets Operator
 
-Add Helm Repository:
-
+```bash
 helm repo add external-secrets https://charts.external-secrets.io
 
 helm repo update
 
-Install External Secrets Operator:
-
 helm install external-secrets external-secrets/external-secrets \
 -n external-secrets \
 --create-namespace
+```
 
-Verify Installation:
+Verify:
 
+```bash
 kubectl get pods -n external-secrets
+```
 
-Expected Output:
+---
 
-external-secrets                     Running
-external-secrets-cert-controller     Running
-external-secrets-webhook             Running
-Create AWS Secret
+## Step 4: Create Secret in AWS Secrets Manager
 
-Create secret in AWS Secrets Manager:
+Store application secrets securely in AWS Secrets Manager.
 
+Example:
+
+```json
 {
-  "DB_USERNAME": "midhun",
-  "DB_PASSWORD": "********",
-  "JWT_SECRET": "********"
+  "DB_USERNAME": "******",
+  "DB_PASSWORD": "******",
+  "JWT_SECRET": "******"
 }
+```
 
-Verify:
+---
 
-aws secretsmanager get-secret-value \
---secret-id app-secrets \
---region ap-south-1
-Create Kubernetes SecretStore
+## Step 5: Create SecretStore
 
-Apply SecretStore:
-
+```bash
 kubectl apply -f kubernetes/secret-store.yaml
+```
 
 Verify:
 
+```bash
 kubectl get secretstore
+```
 
-Expected Output:
+---
 
-NAME               STATUS   READY
-aws-secret-store   Valid    True
-Create External Secret
+## Step 6: Create External Secret
 
-Apply configuration:
-
+```bash
 kubectl apply -f kubernetes/external-secret.yaml
+```
 
 Verify:
 
+```bash
 kubectl get externalsecret
+```
 
-Expected Output:
+---
 
-NAME         STATUS         READY
-app-secret   SecretSynced   True
-Verify Secret Synchronization
+## Step 7: Verify Secret Synchronization
 
-Check Kubernetes Secret:
-
+```bash
 kubectl get secret
+```
 
-Expected Output:
-
-NAME
-app-secret
-
-Describe Secret:
-
+```bash
 kubectl describe secret app-secret
+```
 
-Output:
+Expected:
 
+```text
 DB_USERNAME: 6 bytes
 DB_PASSWORD: 10 bytes
 JWT_SECRET: 17 bytes
-Validation
-Verify SecretStore
+```
+
+---
+
+## Validation
+
+### Verify Nodes
+
+```bash
+kubectl get nodes
+```
+
+### Verify External Secrets Pods
+
+```bash
+kubectl get pods -n external-secrets
+```
+
+### Verify SecretStore
+
+```bash
 kubectl get secretstore
+```
 
-Output:
+### Verify External Secret
 
-aws-secret-store   Valid   True
-Verify External Secret
+```bash
 kubectl get externalsecret
+```
 
-Output:
+### Verify Kubernetes Secret
 
-app-secret   SecretSynced   True
-Verify Kubernetes Secret
+```bash
 kubectl get secret
+```
 
-Output:
+---
 
-app-secret
-Screenshots
-EKS Cluster
+## Screenshots
 
-Worker Node
+### EKS Cluster
 
-SecretStore Status
+![EKS Cluster](screenshots/eks-cluster.png)
 
-External Secret
+### Worker Node Ready
 
-External Secrets Pods
+![Nodes](screenshots/nodes.png)
 
-Kubernetes Secret Created
+### SecretStore Status
 
-Key Learnings
-Provisioned Amazon EKS using Terraform.
-Installed External Secrets Operator using Helm.
-Stored application secrets securely in AWS Secrets Manager.
-Created SecretStore for AWS integration.
-Created ExternalSecret resources.
-Automatically synchronized secrets from AWS Secrets Manager to Kubernetes.
-Eliminated hardcoded secrets from Kubernetes manifests.
-Improved security and secret lifecycle management.
-Cleanup
+![SecretStore](screenshots/secretstore.png)
 
-Delete Kubernetes resources:
+### External Secret
 
+![External Secret](screenshots/external-secret.png)
+
+### External Secrets Pods
+
+![External Secret Pods](screenshots/external-secret-pod.png)
+
+### Kubernetes Secret Created
+
+![Secret Created](screenshots/secret-created.png)
+
+---
+
+## Key Learnings
+
+- Provisioned EKS using Terraform
+- Installed External Secrets Operator with Helm
+- Managed secrets using AWS Secrets Manager
+- Created SecretStore and ExternalSecret resources
+- Synced AWS secrets into Kubernetes automatically
+- Improved security by avoiding hardcoded credentials
+
+---
+
+## Cleanup
+
+```bash
 kubectl delete -f kubernetes/external-secret.yaml
 
 kubectl delete -f kubernetes/secret-store.yaml
 
-Uninstall External Secrets Operator:
-
 helm uninstall external-secrets -n external-secrets
-
-Destroy Infrastructure:
 
 cd terraform
 
 terraform destroy -auto-approve
-Author
+```
 
-Midhun Kumar V
+---
+
+## Author
+
+**Midhun Kumar V**
+
+AWS | Terraform | Kubernetes | DevOps
