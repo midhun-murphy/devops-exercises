@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Environment Variables
+.env
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Logs
+*.log
+
+# Python Test Cache
+.pytest_cache/
+
+# Backup files
+*.bak
+*.tmp
+
+# Terraform (if added later)
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# AWS CLI credentials (never commit)
+.aws/
+
+# IDE
+.idea/
+
+# Restore output (optional)
+restored-app/
