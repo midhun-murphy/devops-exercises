@@ -6,7 +6,7 @@ metadata:
   namespace: dev
 
 spec:
-  replicas: 2
+  replicas: 3
 
   selector:
     matchLabels:
@@ -19,8 +19,8 @@ spec:
 
     spec:
       containers:
-      - name: nginx
-        image: nginx:latest
+        - name: nginx
+          image: nginx:latest
 
-        ports:
-        - containerPort: 80
+          ports:
+            - containerPort: 80
