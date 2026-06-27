@@ -1,0 +1,11 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Release Name: {{ .Release.Name }}
+
+To check the deployment:
+
+kubectl get all
+
+To uninstall:
+
+helm uninstall {{ .Release.Name }}

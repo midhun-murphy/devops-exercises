@@ -1,0 +1,8 @@
+apiVersion: v2
+name: nginx-app
+description: Reusable Helm Chart for deploying NGINX applications
+type: application
+
+version: 1.0.0
+
+appVersion: "1.27"

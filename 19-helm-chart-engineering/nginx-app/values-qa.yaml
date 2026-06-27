@@ -1,0 +1,37 @@
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: "1.27"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 400m
+    memory: 512Mi
+
+config:
+  APP_NAME: nginx-app
+  APP_ENV: qa
+
+secret:
+  USERNAME: qaadmin
+  PASSWORD: qa123
+
+ingress:
+  enabled: true
+  className: nginx
+  host: qa.nginx.local
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 70

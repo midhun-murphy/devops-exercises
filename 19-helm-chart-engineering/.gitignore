@@ -1,0 +1,12 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Helm dependencies
+charts/*.tgz
+
+# Temporary files
+*.log
