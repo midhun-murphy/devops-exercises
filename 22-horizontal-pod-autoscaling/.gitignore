@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Kubernetes generated files
+*.bak
+
+# Environment files
+.env
+.env.*
+
+# OS files
+*.swp
