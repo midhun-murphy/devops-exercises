@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-deployment
+  namespace: production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+    spec:
+      containers:
+      - name: admin
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "<h1>Admin Portal</h1><p>Administrator Dashboard</p>" > /usr/share/nginx/html/index.html
+          nginx -g 'daemon off;'
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20

@@ -1,0 +1,10 @@
+# TLS certificates
+tls/
+*.crt
+*.key
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
