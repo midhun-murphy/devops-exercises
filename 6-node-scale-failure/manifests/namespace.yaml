@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: scalingd:\screenshot\Screenshot 2026-06-29 200954.png
