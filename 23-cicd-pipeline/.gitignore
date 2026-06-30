@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.env
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# VS Code
+.vscode/
+
+# JetBrains IDE
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Docker
+*.log
+
+# Git
+.git/
+
+# Python build files
+build/
+dist/
+*.egg-info/
+
+# Environment variables
+.env.local
+.env.*
+
+# Temporary files
+*.tmp
+*.temp
+
+# Kubernetes
+*.kubeconfig
+
+# Terraform (if added later)
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
+
+# Miscellaneous
+.cache/

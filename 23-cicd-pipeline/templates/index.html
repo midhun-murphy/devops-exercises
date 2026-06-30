@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🧮 Calculator</h1>
+
+<p class="subtitle">CI/CD Pipeline Demo</p>
+
+<form method="POST">
+
+<label>First Number</label>
+
+<input type="number"
+       name="num1"
+       step="any"
+       required>
+
+<label>Second Number</label>
+
+<input type="number"
+       name="num2"
+       step="any"
+       required>
+
+<div class="buttons">
+
+<button name="operation" value="add">➕ Add</button>
+
+<button name="operation" value="subtract">➖ Subtract</button>
+
+<button name="operation" value="multiply">✖ Multiply</button>
+
+<button name="operation" value="divide">➗ Divide</button>
+
+</div>
+
+</form>
+
+{% if result is not none %}
+
+<div class="result">
+
+<h2>Result</h2>
+
+<p>{{ operation }}</p>
+
+<h1>{{ result }}</h1>
+
+</div>
+
+{% endif %}
+
+{% if error %}
+
+<div class="error">
+
+{{ error }}
+
+</div>
+
+{% endif %}
+
+<div class="footer">
+
+<p>Status :
+<span class="green">🟢 Running</span></p>
+
+<p>Version : {{ version }}</p>
+
+</div>
+
+</div>
+
+</body>
+
+</html>
