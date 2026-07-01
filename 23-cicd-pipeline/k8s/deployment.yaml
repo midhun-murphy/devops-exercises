@@ -1,5 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: calculator
   namespace: calculator
@@ -17,11 +18,12 @@ spec:
         app: calculator
 
     spec:
+      imagePullSecrets:
+        - name: ecr-secret
+
       containers:
-      - name: calculator
-
-        image: 588681235754.dkr.ecr.ap-south-1.amazonaws.com/calculator:5b6e17ccef10be1b8321899c1f411033289df0e6
-        imagePullPolicy: IfNotPresent
-
-        ports:
-        - containerPort: 5000
+        - name: calculator
+          image: 588681235754.dkr.ecr.ap-south-1.amazonaws.com/calculator:5b6e17ccef10be1b8321899c1f411033289df0e6
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
