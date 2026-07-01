@@ -20,7 +20,7 @@ spec:
       containers:
       - name: calculator
 
-        image: 588681235754.dkr.ecr.ap-south-1.amazonaws.com/calculator:latest
+        image: 588681235754.dkr.ecr.ap-south-1.amazonaws.com/calculator:5b6e17ccef10be1b8321899c1f411033289df0e6
         imagePullPolicy: IfNotPresent
 
         ports:
