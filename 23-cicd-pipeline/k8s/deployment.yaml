@@ -23,7 +23,7 @@ spec:
 
       containers:
         - name: calculator
-          image: 588681235754.dkr.ecr.ap-south-1.amazonaws.com/calculator:a9c1917a1166c50bae64d087457856da55d27616
+          image: 588681235754.dkr.ecr.ap-south-1.amazonaws.com/calculator:f769e5ede005283141a2d11e4553c5a9efe1e92b
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
