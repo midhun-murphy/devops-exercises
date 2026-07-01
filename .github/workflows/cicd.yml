@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "23-cicd-pipeline/**"
+  
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
