@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: calculator
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/midhun-murphy/devops-exercises.git
+    targetRevision: main
+    path: 23-cicd-pipeline/k8s
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: calculator
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true

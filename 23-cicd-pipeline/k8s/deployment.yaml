@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator
+  namespace: calculator
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: calculator
+
+  template:
+    metadata:
+      labels:
+        app: calculator
+
+    spec:
+      containers:
+      - name: calculator
+
+        image: 588681235754.dkr.ecr.ap-south-1.amazonaws.com/calculator:latest
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5000
