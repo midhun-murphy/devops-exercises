@@ -9,11 +9,13 @@ on:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
-  build-test-push:
+
+  test:
+    name: Test
     runs-on: ubuntu-latest
 
     defaults:
@@ -21,7 +23,6 @@ jobs:
         working-directory: 23-cicd-pipeline
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -39,6 +40,45 @@ jobs:
         run: |
           python -m pytest -v
 
+  security-scan:
+    name: Security Scan
+    needs: test
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: 23-cicd-pipeline
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: |
+          docker build -t calculator:${{ github.sha }} .
+
+      - name: Scan Docker Image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: calculator:${{ github.sha }}
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+
+  build:
+    name: Build
+    needs: security-scan
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: 23-cicd-pipeline
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -47,7 +87,38 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker Image
+        run: |
+          docker build -t calculator:${{ github.sha }} .
+
+      - name: Tag Docker Image
+        run: |
+          docker tag calculator:${{ github.sha }} \
+          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
+
+  push:
+    name: Push
+    needs: build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: 23-cicd-pipeline
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker Image
@@ -63,3 +134,38 @@ jobs:
         run: |
           docker push \
           $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
+
+  deploy:
+    name: Deploy
+    needs: push
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    defaults:
+      run:
+        working-directory: 23-cicd-pipeline
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Kubernetes Manifest
+        run: |
+          sed -i "s|image:.*|image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}|" k8s/deployment.yaml
+
+      - name: Commit Updated Manifest
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add k8s/deployment.yaml
+
+          git diff --cached --quiet || git commit -m "Update calculator image to ${{ github.sha }}"
+
+      - name: Push Changes
+        run: |
+          git push
